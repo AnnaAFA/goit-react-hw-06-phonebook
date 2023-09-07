@@ -1,18 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { ContactForm } from './ContactForm/ContactForm';
 import { ContactList } from './ContactList/ContactList';
 import { Filter } from './Filter/Filter';
 import { MainWrapper } from './App.styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { setContacts, setFilter } from 'redux/contactsReducer';
 
 export const App = () => {
-  const [contacts, setContacts] = useState(() => {
+  // const [contacts, setContacts] = useState(() => {
+  //   return JSON.parse(window.localStorage.getItem('contacts')) ?? [];
+  // });
+  // const [filter, setFilter] = useState('');
+  const contacts = useSelector(state => {
     return JSON.parse(window.localStorage.getItem('contacts')) ?? [];
   });
-  const [filter, setFilter] = useState('');
-
-  // useEffect(() => {
-  //   setContacts(contacts);
-  // }, [contacts]);
+  const filter = useSelector(state => state.contacts.filter);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     localStorage.setItem('contacts', JSON.stringify(contacts));
@@ -26,17 +29,24 @@ export const App = () => {
     if (isContact) {
       return alert(`${data.name} is already in contact`);
     }
-    setContacts(prevContacts => [data, ...prevContacts]);
+    dispatch(setContacts(prevContacts => [data, ...prevContacts]));
+    // setContacts(prevContacts => [data, ...prevContacts]);
   };
 
   const onRemoveContact = contactId => {
-    setContacts(prevContacts =>
-      prevContacts.filter(contact => contact.id !== contactId)
+    dispatch(
+      setContacts(prevContacts =>
+        prevContacts.filter(contact => contact.id !== contactId)
+      )
     );
+    // setContacts(prevContacts =>
+    //   prevContacts.filter(contact => contact.id !== contactId)
+    // );
   };
 
   const onFilterByName = event => {
-    setFilter(event.target.value);
+    dispatch(setFilter(event.target.value));
+    // setFilter(event.target.value);
   };
 
   const filterContact = contacts.filter(contact =>
