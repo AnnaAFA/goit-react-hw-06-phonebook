@@ -1,33 +1,49 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { nanoid } from 'nanoid';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   ContactButton,
   FormWrapper,
   LabelWrapper,
 } from './ContactForm.styled.js';
+import { addContact } from 'redux/contactsSlice.js';
 
-export const ContactForm = ({ onAddContact }) => {
+export const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
 
-  const onInputChangeName = e => {
-    setName(e.target.value);
-  };
+  const dispatch = useDispatch();
+  const contacts = useSelector(state => state.contacts);
 
-  const onInputChangeNumber = e => {
-    setNumber(e.target.value);
+  const onChangeValue = e => {
+    const { name, value } = e.target;
+    switch (name) {
+      case 'name':
+        setName(value);
+        break;
+
+      case 'number':
+        setNumber(value);
+        break;
+
+      default:
+        return;
+    }
   };
 
   const onSubmit = e => {
     e.preventDefault();
 
-    const contact = {
-      id: nanoid(),
-      name,
-      number,
-    };
-    onAddContact(contact);
+    const duplicateNAme = contacts.find(
+      contact =>
+        contact.name.toLowerCase() === name.toLowerCase() ||
+        contact.number === number
+    );
+    if (duplicateNAme) {
+      return alert(`${name} is already in contact`);
+    }
+    dispatch(addContact(name, number));
+
     reset();
   };
 
@@ -48,7 +64,7 @@ export const ContactForm = ({ onAddContact }) => {
             title="Name may contain only letters, apostrophe, dash, and spaces. For example: Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
             required
             value={name}
-            onChange={onInputChangeName}
+            onChange={onChangeValue}
           />
         </LabelWrapper>
         <LabelWrapper>
@@ -60,7 +76,7 @@ export const ContactForm = ({ onAddContact }) => {
             title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
             required
             value={number}
-            onChange={onInputChangeNumber}
+            onChange={onChangeValue}
           />
         </LabelWrapper>
 
@@ -71,5 +87,5 @@ export const ContactForm = ({ onAddContact }) => {
 };
 
 ContactForm.propTypes = {
-  onAddContact: PropTypes.func.isRequired,
+  onAddContact: PropTypes.func,
 };
