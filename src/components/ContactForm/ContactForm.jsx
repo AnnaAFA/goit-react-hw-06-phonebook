@@ -34,12 +34,10 @@ export const ContactForm = () => {
   const onSubmit = e => {
     e.preventDefault();
 
-    const duplicateNAme = contacts.find(
-      contact =>
-        contact.name.toLowerCase() === name.toLowerCase() ||
-        contact.number === number
+    const duplicateName = contacts.find(
+      contact => contact.name.toLowerCase() === name.toLowerCase()
     );
-    if (duplicateNAme) {
+    if (duplicateName) {
       return alert(`${name} is already in contact`);
     }
     dispatch(addContact(name, number));
