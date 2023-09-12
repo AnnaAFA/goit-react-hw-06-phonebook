@@ -14,6 +14,7 @@ export const ContactList = () => {
   );
 
   const onRemoveContact = id => dispatch(removeContact(id));
+
   return (
     <ListWrapper>
       <List>
